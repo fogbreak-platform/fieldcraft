@@ -151,7 +151,7 @@ mod tests {
             assert_ne!(solidcraft_ui_text::tr("settings.language"), "Language");
             assert_ne!(solidcraft_ui_text::tr("workspace.prepare.about"), "Open geometry and mesh it");
             let formatted = solidcraft_ui_text::format("settings.updates_skipped_version", &[("version", "0.8.1")]);
-            assert!(formatted.contains("0.8.1") && formatted.contains("FieldCraft"), "got {formatted:?}");
+            assert!(formatted.contains("0.8.1") && formatted.contains("Fogbreak Field"), "got {formatted:?}");
             let labels: Vec<(&str, String)> = selectable_languages().into_iter().map(|c| (c.pref, c.label)).collect();
             assert_eq!(labels.iter().map(|(p, _)| *p).collect::<Vec<_>>(), [SYSTEM, ENGLISH, HEBREW]);
             assert_eq!(labels[1].1, "English");

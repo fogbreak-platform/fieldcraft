@@ -118,7 +118,7 @@ pub(crate) struct PendingPicker {
 }
 
 fn model() -> Filter {
-    Filter::new("FieldCraft model", &["fieldcraft"])
+    Filter::new("Fogbreak Field model", &["fieldcraft"])
 }
 fn orphan() -> Filter {
     Filter::cased("Orphan mesh (Gmsh MSH 4.1)", &["msh"])
@@ -126,7 +126,7 @@ fn orphan() -> Filter {
 /// The Delete confirmation's icon: the kit's bin, as its delete buttons draw.
 pub(crate) const DELETE_ICON: &str = "delete";
 fn script() -> Filter {
-    Filter::cased("FieldCraft script (JSON)", &["json"])
+    Filter::cased("Fogbreak Field script (JSON)", &["json"])
 }
 /// Largest script File › Run Script… reads (bytes), as `fieldcraft-cli run`.
 const MAX_SCRIPT_BYTES: u64 = 256 * 1024 * 1024;
@@ -139,7 +139,7 @@ fn geometry_formats() -> Vec<formats::Format> {
 /// SolidCraft's designs and CAD: one filter for the geometry the Design picker opens.
 fn geometry() -> Filter {
     let exts = formats::extensions(Source::Design).into_iter().chain(formats::extensions(Source::Brep)).collect::<Vec<_>>();
-    Filter::cased("CAD geometry and SolidCraft designs", &exts)
+    Filter::cased("CAD geometry and Fogbreak Solid designs", &exts)
 }
 
 /// One filter per format row that opens as geometry (SolidCraft design, STEP, IGES, FreeCAD, Rhino).
@@ -996,7 +996,7 @@ impl ModelApp {
         let Some(kind) = Kind::of(path) else {
             self.set_status(
                 format!(
-                    "{path}: FieldCraft opens .fieldcraft models, .sc/.solidcraft designs, STEP/IGES geometry, .3mf tagged meshes and .msh orphan meshes"
+                    "{path}: Fogbreak Field opens .fieldcraft models, .sc/.solidcraft designs, STEP/IGES geometry, .3mf tagged meshes and .msh orphan meshes"
                 ),
                 true,
             );

@@ -327,7 +327,7 @@ pub const DEFAULT_PRESET: &str = "fieldcraft";
 pub const NAV_PRESETS: [NavPreset; 7] = [
     NavPreset {
         id: DEFAULT_PRESET,
-        label: "FieldCraft",
+        label: "Fogbreak Field",
         help: "Left drag does the navigation bar's mode (orbit, pan or zoom); right, middle or Shift+left drag pans",
         reverse_zoom: false,
         bindings: &[bind(Left, NavKeys::SHIFT, Pan), bind(Right, NavKeys::NONE, Pan), bind(Middle, NavKeys::NONE, Pan)],

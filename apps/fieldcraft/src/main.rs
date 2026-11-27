@@ -31,11 +31,15 @@ const MSAA: u16 = 4;
 /// `.desktop` entry (packaging/linux), and the macOS bundle id (packaging/macos/Info.plist.in).
 const APP_ID: &str = "io.github.tangencylabs.fieldcraft";
 
-/// The window and Dock icon: the 256 px export of the application icon (assets/app-icon).
-const ICON_PNG: &[u8] = include_bytes!("../../../assets/app-icon/icon.iconset/icon_128x128@2x.png");
+/// The window and Dock icon bytes (stripped in Fogbreak builds).
+const ICON_PNG: &[u8] = &[];
 
-/// The application icon for the window; eframe's default icon if the PNG cannot be decoded.
+/// The application icon for the window; eframe's default icon when stripped.
+#[allow(dead_code)]
 fn app_icon() -> egui::IconData {
+    if ICON_PNG.is_empty() {
+        return egui::IconData::default();
+    }
     eframe::icon_data::from_png_bytes(ICON_PNG).unwrap_or_else(|e| {
         log::warn!("app icon: {e}");
         egui::IconData::default()
@@ -136,7 +140,7 @@ impl eframe::App for App {
         if let Some(staged) = self.app.take_staged_update() {
             update::finish(&staged);
         }
-        log::info!("FieldCraft closed");
+        log::info!("Fogbreak Field closed");
         crash::end_session();
     }
     fn raw_input_hook(&mut self, ctx: &egui::Context, raw: &mut egui::RawInput) {
@@ -213,7 +217,7 @@ fn start_reporting() -> Vec<crash::Summary> {
     }
     let b = crash::Build::current();
     log::info!(
-        "FieldCraft {} started ({}), crash reports in {}",
+        "Fogbreak Field {} started ({}), crash reports in {}",
         b.version,
         b.version_line(),
         crash::default_dir().map(|d| d.display().to_string()).unwrap_or_default()
@@ -306,9 +310,8 @@ fn main() -> eframe::Result {
     crash::phase("window");
     let options = eframe::NativeOptions {
         viewport: egui::ViewportBuilder::default()
-            .with_title("FieldCraft")
+            .with_title("Fogbreak Field")
             .with_app_id(APP_ID)
-            .with_icon(app_icon())
             .with_inner_size(WINDOW_SIZE)
             .with_min_inner_size(MIN_WINDOW_SIZE)
             .with_drag_and_drop(true)
@@ -328,7 +331,7 @@ fn main() -> eframe::Result {
         ..Default::default()
     };
     eframe::run_native(
-        "FieldCraft",
+        "Fogbreak Field",
         options,
         Box::new(move |cc| {
             crash::phase("app setup");
@@ -397,13 +400,6 @@ fn main() -> eframe::Result {
 
 #[cfg(test)]
 mod tests {
-    #[test]
-    fn the_app_icon_decodes() {
-        let icon = super::app_icon();
-        assert_eq!((icon.width, icon.height), (256, 256));
-        assert_eq!(icon.rgba.len(), 256 * 256 * 4);
-    }
-
     use super::*;
 
     #[test]

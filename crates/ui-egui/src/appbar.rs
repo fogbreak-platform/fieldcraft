@@ -85,7 +85,7 @@ fn fullscreen(ctx: &egui::Context) -> bool {
 
 /// This version's release notes.
 fn release_notes() -> String {
-    format!("https://github.com/tangency-labs/fieldcraft/releases/tag/v{}", crate::VERSION)
+    format!("https://github.com/fogbreak-platform/fieldcraft/releases/tag/v{}", crate::VERSION)
 }
 
 /// The name the kit's bar reads the offer span's drawn width under (`app_bar::show`, SolidCraft's
@@ -125,7 +125,7 @@ fn bar(app: &mut ModelApp, ui: &mut egui::Ui, r: Rect, content: Rect) {
     let chrome = |id, icon, tip| BarButton { id, icon, tip, enabled: true, narrow: false, wide_only: false };
     let data = app_bar::AppBar {
         mark: &mark,
-        name: "FieldCraft",
+        name: "Fogbreak Field",
         home: chrome("home", "home", "Start: new, open, recent files and samples"),
         file: "File",
         file_open: app.ui.menu.as_deref() == Some("file"),
@@ -260,9 +260,9 @@ fn update_pill(app: &mut ModelApp, ui: &mut egui::Ui, span: Rect, labeled: bool)
     use crate::updates::Offer;
     let offer = crate::updates::offer(app)?;
     let (full, tip) = match &offer {
-        Offer::Release(version) => (format!("Update to {version}"), format!("FieldCraft {version} is available")),
+        Offer::Release(version) => (format!("Update to {version}"), format!("Fogbreak Field {version} is available")),
         Offer::Busy(busy) => ("Update".to_string(), busy.clone()),
-        Offer::Reload => ("Reload to update".to_string(), "A new version of FieldCraft is available".to_string()),
+        Offer::Reload => ("Reload to update".to_string(), "A new version of Fogbreak Field is available".to_string()),
     };
     let k = solidcraft_theme::Tokens::get();
     let font = FontId::proportional(k.font_label);
@@ -423,14 +423,14 @@ fn help_menu(app: &mut ModelApp, ui: &mut egui::Ui) {
     );
     let (mut check, mut reinstall) = (false, false);
     if app.updates_available() {
-        check = row(ui, "help.check_updates", "Check for Updates", "Ask GitHub Releases whether a newer FieldCraft is published");
+        check = row(ui, "help.check_updates", "Check for Updates", "Ask GitHub Releases whether a newer Fogbreak Field is published");
         reinstall =
-            row(ui, "help.reinstall", "Reinstall FieldCraft…", "Download this version again, verify it and swap it in, to repair a damaged install");
+            row(ui, "help.reinstall", "Reinstall Fogbreak Field…", "Download this version again, verify it and swap it in, to repair a damaged install");
     }
     let crashes = row(ui, "help.crash_reports", "Crash Reports…", "The crash reports saved on this computer: report, copy or delete them");
     let settings = row(ui, "help.settings", "Settings…", "Units, the window, privacy and updates");
     crate::frame::menu_separator(ui);
-    note(ui, &format!("FieldCraft {}", crate::VERSION));
+    note(ui, &format!("Fogbreak Field {}", crate::VERSION));
     // Everything the menu drew, down to the version (control channel, tests).
     app.place("menu:help", ui.min_rect());
     if report {
@@ -619,82 +619,39 @@ mod tests {
         let mut app = ModelApp::new(Session::default());
         let ctx = egui::Context::default();
         frame(&mut app, &ctx, Vec::new());
-        let out = frame(&mut app, &ctx, Vec::new());
-        let (tab, donate, discord) = (region(&app, "document_tab"), region(&app, "app_bar:donate"), region(&app, "app_bar:discord"));
-        let (solve, report) = (region(&app, "app_bar:solve"), region(&app, "app_bar:report"));
-        for (a, b) in [(tab, donate), (donate, discord), (discord, solve), (solve, report)] {
-            assert!(a.right() <= b.left(), "{a:?} before {b:?}: tab {tab:?} donate {donate:?} discord {discord:?} solve {solve:?} report {report:?}");
-        }
-        for (pill, fill) in [(donate, app_bar::brand::KOFI), (discord, app_bar::brand::DISCORD)] {
-            let painted = out.shapes.iter().any(|s| matches!(&s.shape, egui::Shape::Rect(r) if r.fill == fill && r.rect.contains_rect(pill)));
-            assert!(painted, "{pill:?} is not filled with {fill:?}");
+        let _out = frame(&mut app, &ctx, Vec::new());
+        assert!(crate::links::LINKS.is_empty());
+        assert!(!app.layout.contains_key("app_bar:donate"));
+        assert!(!app.layout.contains_key("app_bar:discord"));
+        let (tab, solve, report) = (region(&app, "document_tab"), region(&app, "app_bar:solve"), region(&app, "app_bar:report"));
+        for (a, b) in [(tab, solve), (solve, report)] {
+            assert!(a.right() <= b.left(), "{a:?} before {b:?}: tab {tab:?} solve {solve:?} report {report:?}");
         }
         let (tx, _rx) = std::sync::mpsc::channel();
         let crate::control::Outcome::Done(reply) = crate::control::handle(&mut app, &ctx, &crate::ControlRequest::new("ui.inspect", json!({}), tx))
         else {
             panic!("ui.inspect replies at once")
         };
-        for k in ["app_bar:donate", "app_bar:discord"] {
-            assert!(reply["result"]["layout"][k].is_array(), "{k} not in ui.inspect's layout");
-        }
+        assert!(!reply["result"]["layout"]["app_bar:donate"].is_array());
+        assert!(!reply["result"]["layout"]["app_bar:discord"].is_array());
     }
 
-    /// The × on a pill hides that pill alone, and the window remembers it in its preferences: the
-    /// next window does not show it either.
     #[test]
     fn hiding_a_pill_hides_only_it_and_is_remembered() {
         let saved = std::rc::Rc::new(std::cell::RefCell::new(None));
         let services = || crate::files::Services { prefs: Some(memory_store(&saved)), ..Default::default() };
-        let mut app = ModelApp::new(Session::default()).with_services(services());
-        let ctx = egui::Context::default();
-        frame(&mut app, &ctx, Vec::new());
-        frame(&mut app, &ctx, Vec::new());
-        let hide = region(&app, "app_bar:donate:hide").center();
-        click(&mut app, &ctx, hide);
-        frame(&mut app, &ctx, Vec::new());
-        assert!(!app.layout.contains_key("app_bar:donate") && app.layout.contains_key("app_bar:discord"));
+        let app = ModelApp::new(Session::default()).with_services(services());
         let prefs = serde_json::to_value(app.prefs()).unwrap_or_default();
-        assert_eq!((prefs["show_donate_button"].as_bool(), prefs["show_discord_button"].as_bool()), (Some(false), Some(true)), "{prefs}");
-        let mut next = ModelApp::new(Session::default()).with_services(services());
-        let ctx = egui::Context::default();
-        frame(&mut next, &ctx, Vec::new());
-        frame(&mut next, &ctx, Vec::new());
-        assert!(!next.layout.contains_key("app_bar:donate") && next.layout.contains_key("app_bar:discord"));
+        assert!(prefs["show_donate_button"].is_boolean() && prefs["show_discord_button"].is_boolean(), "{prefs}");
     }
 
-    /// A click on a pill opens its page through the host's URL opener; the same click sent over
-    /// the control channel opens nothing.
     #[test]
     fn a_click_opens_the_page_and_a_control_channel_click_does_not() {
-        let opened = std::rc::Rc::new(std::cell::RefCell::new(Vec::<String>::new()));
-        let log = opened.clone();
-        let services = crate::files::Services {
-            open_url: Some(Box::new(move |url| {
-                log.borrow_mut().push(url.to_string());
-                Ok(())
-            })),
-            ..Default::default()
-        };
-        let mut app = ModelApp::new(Session::default()).with_services(services);
+        let mut app = ModelApp::new(Session::default());
         let ctx = egui::Context::default();
         frame(&mut app, &ctx, Vec::new());
-        frame(&mut app, &ctx, Vec::new());
-        for k in ["app_bar:donate", "app_bar:discord"] {
-            let at = region(&app, k).center();
-            click(&mut app, &ctx, at);
-        }
-        assert_eq!(*opened.borrow(), ["https://ko-fi.com/jyviko/tiers", "https://discord.gg/FtU4NQNVDH"]);
-        for k in ["app_bar:donate", "app_bar:discord"] {
-            let at = region(&app, k).center();
-            let (tx, _rx) = std::sync::mpsc::channel();
-            crate::control::handle(&mut app, &ctx, &crate::ControlRequest::new("ui.click", json!({"x": at.x, "y": at.y}), tx));
-            while !app.synthetic.is_empty() {
-                let out = frame(&mut app, &ctx, Vec::new());
-                assert!(!out.platform_output.commands.iter().any(|c| matches!(c, egui::OutputCommand::OpenUrl(_))), "{k}");
-            }
-            frame(&mut app, &ctx, Vec::new());
-        }
-        assert_eq!(opened.borrow().len(), 2, "{:?}", opened.borrow());
+        assert!(!app.layout.contains_key("app_bar:donate"));
+        assert!(!app.layout.contains_key("app_bar:discord"));
     }
 
     /// The Help menu fits a laptop window (1280 × 800): every row, down to the version, can be

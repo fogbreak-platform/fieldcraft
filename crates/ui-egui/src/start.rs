@@ -177,12 +177,12 @@ fn contents<'a>(app: &'a ModelApp, ctx: &egui::Context, interactive: bool) -> Pa
     let (title, hint, body) = match section {
         Section::Start => (
             "Start",
-            "Open a model, a SolidCraft design or a tagged mesh, or drop one here. The samples are ready to solve.",
+            "Open a model, a Fogbreak Solid design or a tagged mesh, or drop one here. The samples are ready to solve.",
             Body::Start(Box::new(start(app, ctx))),
         ),
         Section::Recover => (
             "Recover",
-            "Models autosaved by a FieldCraft that crashed or closed with unsaved changes.",
+            "Models autosaved by a Fogbreak Field session that crashed or closed with unsaved changes.",
             Body::Reviews(recover(app.start_page.recoverable.as_deref().unwrap_or_default())),
         ),
     };
@@ -217,7 +217,7 @@ fn start<'a>(app: &'a ModelApp, ctx: &egui::Context) -> Start<'a, Action> {
             "start:tile:design",
             "open",
             "Open design…",
-            "SolidCraft, STEP or IGES geometry to mesh and set up".into(),
+            "Fogbreak Solid, STEP or IGES geometry to mesh and set up".into(),
             false,
             Action::Open(Some(Kind::Design)),
         ),

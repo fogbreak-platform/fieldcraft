@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+  <meta name="color-scheme" content="dark light">
+  <title>Fogbreak Field</title>
+  <link data-trunk rel="rust" href="Cargo.toml" data-bin="fogbreak-field" data-wasm-opt="z" data-weak-refs />
+  <style>
+    :root {
+      --fb-bg: #F7FAFC;
+      --fb-ink: #111821;
+      --fb-muted: #5A6B7D;
+      --fb-accent: #087F9C;
+      --fb-track: #D8E2EC;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) {
+        --fb-bg: #111821;
+        --fb-ink: #F7FAFC;
+        --fb-muted: #93A4B7;
+        --fb-accent: #087F9C;
+        --fb-track: #243140;
+      }
+    }
+    :root[data-theme="dark"] {
+      --fb-bg: #111821;
+      --fb-ink: #F7FAFC;
+      --fb-muted: #93A4B7;
+      --fb-accent: #087F9C;
+      --fb-track: #243140;
+    }
+    :root[data-theme="light"] {
+      --fb-bg: #F7FAFC;
+      --fb-ink: #111821;
+      --fb-muted: #5A6B7D;
+      --fb-accent: #087F9C;
+      --fb-track: #D8E2EC;
+    }
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      overscroll-behavior: none;
+      background: var(--fb-bg);
+      color: var(--fb-ink);
+      font-family: system-ui, -apple-system, sans-serif;
+    }
+    #fogbreak_canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
+      outline: none;
+      touch-action: none;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-touch-callout: none;
+    }
+    #fogbreak_loading {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      padding: 0 16px;
+      text-align: center;
+      background: var(--fb-bg);
+      color: var(--fb-ink);
+      pointer-events: none;
+    }
+    #fogbreak_loading h1 {
+      margin: 0;
+      font-size: 20px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+    }
+    #fogbreak_loading p {
+      margin: 0;
+      max-width: 420px;
+      line-height: 1.5;
+      color: var(--fb-muted);
+    }
+    #fogbreak_loading a {
+      color: var(--fb-accent);
+      pointer-events: auto;
+    }
+    #fogbreak_progress {
+      width: min(280px, 70vw);
+      height: 4px;
+      border: 0;
+      border-radius: 2px;
+      background: var(--fb-track);
+      accent-color: var(--fb-accent);
+    }
+    #fogbreak_stalled {
+      font-size: 13px;
+      visibility: hidden;
+      animation: fogbreak-stalled 0s 30s forwards;
+    }
+    @keyframes fogbreak-stalled {
+      to { visibility: visible; }
+    }
+  </style>
+</head>
+<body>
+  <canvas id="fogbreak_canvas" data-host="page" data-engine="fogbreak-field" data-rpc-key="fogbreakFieldHost" data-iframe="false"></canvas>
+  <div id="fogbreak_loading" role="status" aria-live="polite">
+    <h1>Fogbreak Field</h1>
+    <progress id="fogbreak_progress" max="1" aria-label="Loading Fogbreak Field"></progress>
+    <p id="fogbreak_status">Initializing workspace&hellip;</p>
+    <p id="fogbreak_stalled">This is taking longer than usual. If Fogbreak Field fails to start, <a href="">Reload</a> the page.</p>
+  </div>
+  <script>
+    (function () {
+      try {
+        var params = new URLSearchParams(window.location.search);
+        var mode = params.get("theme") || window.localStorage.getItem("fogbreak:theme");
+        if (mode === "light" || mode === "dark") {
+          document.documentElement.setAttribute("data-theme", mode);
+        }
+      } catch (_) {}
+      function hideLoading() {
+        var el = document.getElementById("fogbreak_loading");
+        if (el) el.remove();
+      }
+      window.addEventListener("fogbreak-field:ready", hideLoading, { once: true });
+      window.addEventListener("fogbreak-field:failed", function (ev) {
+        var el = document.getElementById("fogbreak_status");
+        if (el && ev && ev.detail && ev.detail.message) {
+          el.textContent = ev.detail.message;
+        }
+      });
+    })();
+  </script>
+</body>
+</html>

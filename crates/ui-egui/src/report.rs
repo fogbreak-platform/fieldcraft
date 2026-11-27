@@ -229,10 +229,10 @@ fn size(bytes: usize) -> String {
 
 fn kind_label(kind: &str) -> &'static str {
     match kind {
-        "unclean_exit" => "FieldCraft closed unexpectedly",
+        "unclean_exit" => "Fogbreak Field closed unexpectedly",
         "command_panic" => "A command hit an internal error",
         "solver_error" => "A solve stopped",
-        _ => "FieldCraft hit an internal error",
+        _ => "Fogbreak Field hit an internal error",
     }
 }
 
@@ -252,8 +252,8 @@ pub fn show(app: &mut ModelApp, ctx: &egui::Context) {
                     message(
                         ui,
                         match first.kind.as_str() {
-                            "unclean_exit" => "FieldCraft closed unexpectedly the last time it ran.",
-                            _ => "FieldCraft hit an internal error the last time it ran.",
+                            "unclean_exit" => "Fogbreak Field closed unexpectedly the last time it ran.",
+                            _ => "Fogbreak Field hit an internal error the last time it ran.",
                         },
                     );
                     if reports.len() > 1 {

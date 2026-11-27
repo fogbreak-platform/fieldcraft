@@ -522,11 +522,147 @@ fn install_hebrew_fallback(fonts: &mut egui::FontDefinitions) {
 /// SolidCraft's look installed into the kit, once per process: FieldCraft's icon set (SolidCraft's
 /// with ours, [`crate::icons::SET`]), SolidCraft's code-drawn glyphs and its built-in themes, and
 /// FieldCraft's text for the kit's messages.
+fn install_fogbreak_glyphs() {
+    use solidcraft_ui_kit::icons::glyphs::Glyphs;
+    use solidcraft_ui_kit::window_chrome::Caption;
+
+    fn transport(p: &egui::Painter, c: egui::Pos2, what: &str, col: egui::Color32) {
+        let s = egui::Stroke::new(1.5, col);
+        match what {
+            "first" => {
+                p.line_segment([egui::pos2(c.x - 4.0, c.y - 4.0), egui::pos2(c.x - 4.0, c.y + 4.0)], s);
+                p.add(egui::Shape::convex_polygon(
+                    vec![egui::pos2(c.x + 4.0, c.y - 4.0), egui::pos2(c.x - 2.0, c.y), egui::pos2(c.x + 4.0, c.y + 4.0)],
+                    col,
+                    egui::Stroke::NONE,
+                ));
+            }
+            "back" => {
+                p.add(egui::Shape::convex_polygon(
+                    vec![egui::pos2(c.x + 3.0, c.y - 4.0), egui::pos2(c.x - 3.0, c.y), egui::pos2(c.x + 3.0, c.y + 4.0)],
+                    col,
+                    egui::Stroke::NONE,
+                ));
+            }
+            "forward" => {
+                p.add(egui::Shape::convex_polygon(
+                    vec![egui::pos2(c.x - 3.0, c.y - 4.0), egui::pos2(c.x + 3.0, c.y), egui::pos2(c.x - 3.0, c.y + 4.0)],
+                    col,
+                    egui::Stroke::NONE,
+                ));
+            }
+            "play" => {
+                p.add(egui::Shape::convex_polygon(
+                    vec![egui::pos2(c.x - 3.0, c.y - 4.5), egui::pos2(c.x + 4.0, c.y), egui::pos2(c.x - 3.0, c.y + 4.5)],
+                    col,
+                    egui::Stroke::NONE,
+                ));
+            }
+            "pause" => {
+                p.line_segment([egui::pos2(c.x - 2.0, c.y - 4.0), egui::pos2(c.x - 2.0, c.y + 4.0)], s);
+                p.line_segment([egui::pos2(c.x + 2.0, c.y - 4.0), egui::pos2(c.x + 2.0, c.y + 4.0)], s);
+            }
+            _ => {
+                p.line_segment([egui::pos2(c.x + 4.0, c.y - 4.0), egui::pos2(c.x + 4.0, c.y + 4.0)], s);
+                p.add(egui::Shape::convex_polygon(
+                    vec![egui::pos2(c.x - 4.0, c.y - 4.0), egui::pos2(c.x + 2.0, c.y), egui::pos2(c.x - 4.0, c.y + 4.0)],
+                    col,
+                    egui::Stroke::NONE,
+                ));
+            }
+        }
+    }
+
+    fn caption(ui: &egui::Ui, cap: Caption, maximized: bool, at: egui::Pos2, s: egui::Stroke) {
+        let p = ui.painter();
+        match cap {
+            Caption::Minimize => p.line_segment([egui::pos2(at.x - 5.0, at.y), egui::pos2(at.x + 5.0, at.y)], s),
+            Caption::Maximize => {
+                let r = egui::Rect::from_center_size(at, egui::vec2(if maximized { 8.0 } else { 10.0 }, if maximized { 8.0 } else { 10.0 }));
+                p.rect_stroke(r, 0.0, s, egui::StrokeKind::Inside);
+            }
+            Caption::Close => {
+                p.line_segment([egui::pos2(at.x - 4.5, at.y - 4.5), egui::pos2(at.x + 4.5, at.y + 4.5)], s);
+                p.line_segment([egui::pos2(at.x + 4.5, at.y - 4.5), egui::pos2(at.x - 4.5, at.y + 4.5)], s);
+            }
+        }
+    }
+
+    fn badge(p: &egui::Painter, r: egui::Rect, _name: &str, c: egui::Color32) {
+        p.circle_stroke(r.center(), r.width().min(r.height()) * 0.35, egui::Stroke::new(1.25, c));
+    }
+
+    fn pin(p: &egui::Painter, r: egui::Rect, on: bool, col: egui::Color32) {
+        let c = r.center();
+        if on {
+            p.circle_filled(c, 3.0, col);
+        } else {
+            p.circle_stroke(c, 3.0, egui::Stroke::new(1.25, col));
+        }
+    }
+
+    fn cross(p: &egui::Painter, r: egui::Rect, s: egui::Stroke) {
+        let c = r.center();
+        let d = (r.width().min(r.height()) * 0.32).max(3.0);
+        p.line_segment([egui::pos2(c.x - d, c.y - d), egui::pos2(c.x + d, c.y + d)], s);
+        p.line_segment([egui::pos2(c.x + d, c.y - d), egui::pos2(c.x - d, c.y + d)], s);
+    }
+
+    fn breadcrumb(p: &egui::Painter, c: egui::Pos2, col: egui::Color32) {
+        let s = egui::Stroke::new(1.25, col);
+        p.line_segment([egui::pos2(c.x - 2.0, c.y - 3.5), egui::pos2(c.x + 2.0, c.y)], s);
+        p.line_segment([egui::pos2(c.x + 2.0, c.y), egui::pos2(c.x - 2.0, c.y + 3.5)], s);
+    }
+
+    fn axis_tip(
+        p: &egui::Painter,
+        c: egui::Pos2,
+        name: &str,
+        dir: [f64; 3],
+        at: egui::Pos2,
+        depth: f64,
+        hovered: bool,
+        tokens: solidcraft_theme::Tokens,
+        scale: f32,
+    ) {
+        solidcraft_look::compass::axis_tip_scaled(
+            p,
+            c,
+            name,
+            egui::vec3(dir[0] as f32, dir[1] as f32, dir[2] as f32),
+            at,
+            depth,
+            hovered,
+            tokens,
+            scale,
+        );
+    }
+
+    fn brand_mark(p: &egui::Painter, c: egui::Pos2, _height: f32, _ink: egui::Color32) {
+        solidcraft_look::glyphs::brand_mark(p, c);
+    }
+
+    static GLYPHS: Glyphs = Glyphs {
+        transport,
+        caption,
+        badge,
+        pin,
+        cross,
+        breadcrumb,
+        axis_tip,
+        axis_radius: 9.5,
+        pointer: solidcraft_look::pointer::paint,
+        brand_mark,
+    };
+
+    solidcraft_ui_kit::icons::glyphs::install(&GLYPHS);
+}
+
 pub fn install_look() {
     solidcraft_ui_text::install(&*MESSAGES);
     crate::icons::install();
-    solidcraft_look::glyphs::install();
-    solidcraft_look::themes::install();
+    install_fogbreak_glyphs();
+    solidcraft_ui_kit::theme_files::install_builtin(solidcraft_look::themes::BUILTIN);
 }
 
 /// Style the context for the dark or light theme: SolidCraft's look installed in the kit, with

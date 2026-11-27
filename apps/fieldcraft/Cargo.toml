@@ -76,12 +76,12 @@ embed-resource = "3.0.12"
 # NEEDED entries and the tools cannot find them: they are listed here.
 [package.metadata.deb]
 name = "fieldcraft"
-maintainer = "FieldCraft contributors <jyviko@users.noreply.github.com>"
-copyright = "FieldCraft contributors"
+maintainer = "Fogbreak Contributors"
+copyright = "Fogbreak Contributors"
 section = "science"
 priority = "optional"
 extended-description = """\
-FieldCraft turns geometry into analysis-ready finite element models: volume \
+Fogbreak Field turns geometry into analysis-ready finite element models: volume \
 meshes, materials, sections, boundary conditions, loads and steps. It writes \
 Abaqus input, Nastran bulk data and LS-DYNA keyword decks, and solves linear \
 static and modal problems with its own solver. Includes fieldcraft-cli, a \
@@ -92,13 +92,6 @@ assets = [
     ["target/release/fieldcraft", "usr/bin/", "755"],
     ["target/release/fieldcraft-cli", "usr/bin/", "755"],
     ["../../packaging/linux/io.github.tangencylabs.fieldcraft.desktop", "usr/share/applications/", "644"],
-    ["../../assets/app-icon/icon.iconset/icon_16x16.png", "usr/share/icons/hicolor/16x16/apps/io.github.tangencylabs.fieldcraft.png", "644"],
-    ["../../assets/app-icon/icon.iconset/icon_32x32.png", "usr/share/icons/hicolor/32x32/apps/io.github.tangencylabs.fieldcraft.png", "644"],
-    ["../../assets/app-icon/icon.iconset/icon_32x32@2x.png", "usr/share/icons/hicolor/64x64/apps/io.github.tangencylabs.fieldcraft.png", "644"],
-    ["../../assets/app-icon/icon.iconset/icon_128x128.png", "usr/share/icons/hicolor/128x128/apps/io.github.tangencylabs.fieldcraft.png", "644"],
-    ["../../assets/app-icon/icon.iconset/icon_256x256.png", "usr/share/icons/hicolor/256x256/apps/io.github.tangencylabs.fieldcraft.png", "644"],
-    ["../../assets/app-icon/icon.iconset/icon_512x512.png", "usr/share/icons/hicolor/512x512/apps/io.github.tangencylabs.fieldcraft.png", "644"],
-    ["../../assets/app-icon/icon.iconset/icon_512x512@2x.png", "usr/share/icons/hicolor/1024x1024/apps/io.github.tangencylabs.fieldcraft.png", "644"],
     ["../../README.md", "usr/share/doc/fieldcraft/", "644"],
     ["../../LICENSE-MIT", "usr/share/doc/fieldcraft/", "644"],
     ["../../LICENSE-APACHE", "usr/share/doc/fieldcraft/", "644"],
@@ -109,18 +102,11 @@ assets = [
 [package.metadata.generate-rpm]
 name = "fieldcraft"
 license = "MIT OR Apache-2.0"
-url = "https://github.com/tangency-labs/fieldcraft"
+url = "https://github.com/fogbreak-platform/fieldcraft"
 assets = [
     { source = "target/release/fieldcraft", dest = "/usr/bin/fieldcraft", mode = "755" },
     { source = "target/release/fieldcraft-cli", dest = "/usr/bin/fieldcraft-cli", mode = "755" },
     { source = "../../packaging/linux/io.github.tangencylabs.fieldcraft.desktop", dest = "/usr/share/applications/io.github.tangencylabs.fieldcraft.desktop", mode = "644" },
-    { source = "../../assets/app-icon/icon.iconset/icon_16x16.png", dest = "/usr/share/icons/hicolor/16x16/apps/io.github.tangencylabs.fieldcraft.png", mode = "644" },
-    { source = "../../assets/app-icon/icon.iconset/icon_32x32.png", dest = "/usr/share/icons/hicolor/32x32/apps/io.github.tangencylabs.fieldcraft.png", mode = "644" },
-    { source = "../../assets/app-icon/icon.iconset/icon_32x32@2x.png", dest = "/usr/share/icons/hicolor/64x64/apps/io.github.tangencylabs.fieldcraft.png", mode = "644" },
-    { source = "../../assets/app-icon/icon.iconset/icon_128x128.png", dest = "/usr/share/icons/hicolor/128x128/apps/io.github.tangencylabs.fieldcraft.png", mode = "644" },
-    { source = "../../assets/app-icon/icon.iconset/icon_256x256.png", dest = "/usr/share/icons/hicolor/256x256/apps/io.github.tangencylabs.fieldcraft.png", mode = "644" },
-    { source = "../../assets/app-icon/icon.iconset/icon_512x512.png", dest = "/usr/share/icons/hicolor/512x512/apps/io.github.tangencylabs.fieldcraft.png", mode = "644" },
-    { source = "../../assets/app-icon/icon.iconset/icon_512x512@2x.png", dest = "/usr/share/icons/hicolor/1024x1024/apps/io.github.tangencylabs.fieldcraft.png", mode = "644" },
     { source = "../../README.md", dest = "/usr/share/doc/fieldcraft/README.md", mode = "644", doc = true },
     { source = "../../LICENSE-MIT", dest = "/usr/share/doc/fieldcraft/LICENSE-MIT", mode = "644", doc = true },
     { source = "../../LICENSE-APACHE", dest = "/usr/share/doc/fieldcraft/LICENSE-APACHE", mode = "644", doc = true },

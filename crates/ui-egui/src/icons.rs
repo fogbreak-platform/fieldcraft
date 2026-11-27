@@ -16,7 +16,7 @@
 //! the others to catalogue entries.
 
 use egui::Rect;
-use solidcraft_ui_kit::icons::{self as kit_icons, IconExtension, IconSet};
+use solidcraft_ui_kit::icons::{self as kit_icons, IconData, IconSet};
 
 include!(concat!(env!("OUT_DIR"), "/icons.rs"));
 
@@ -71,8 +71,21 @@ pub const ALIASES: &[(&str, &str, &str)] = &[
     ("solve.probe", "measure", ""),
 ];
 
-/// SolidCraft's icons with FieldCraft's masters and aliases over them.
-pub static SET: IconSet = IconSet::extended(solidcraft_look::icons::DATA, IconExtension { masters: MASTERS, aliases: ALIASES, icon_accents: &[] });
+/// Shared icons merged with Fogbreak Field's masters and aliases over them.
+pub static SET: std::sync::LazyLock<IconSet> = std::sync::LazyLock::new(|| {
+    let base = solidcraft_look::icons::DATA;
+    let mut masters = Vec::with_capacity(MASTERS.len() + base.masters.len());
+    masters.extend_from_slice(MASTERS);
+    masters.extend_from_slice(base.masters);
+    let mut aliases = Vec::with_capacity(ALIASES.len() + base.aliases.len());
+    aliases.extend_from_slice(ALIASES);
+    aliases.extend_from_slice(base.aliases);
+    IconSet::new(IconData {
+        masters: Vec::leak(masters),
+        aliases: Vec::leak(aliases),
+        ..base
+    })
+});
 
 /// Make [`SET`] the icons the kit draws (once per process; again does nothing).
 pub fn install() {

@@ -119,7 +119,7 @@ pub fn start() {
                     el.remove();
                 }
             }
-            Err(e) => failed(&format!("FieldCraft could not start: {}", js_err(e))),
+            Err(e) => failed(&format!("Fogbreak Field could not start: {}", js_err(e))),
         }
     });
 }
@@ -144,7 +144,7 @@ fn failed(why: &str) {
     // Best effort: the console has the message too.
     let _ = el.class_list().add_1("failed");
     for line in
-        [why, "FieldCraft needs a browser with WebGPU or WebGL2 (a current Chrome, Edge, Firefox or Safari) and graphics acceleration turned on."]
+        [why, "Fogbreak Field needs a browser with WebGPU or WebGL2 (a current Chrome, Edge, Firefox or Safari) and graphics acceleration turned on."]
     {
         if let Ok(p) = document.create_element("p") {
             p.set_text_content(Some(line));

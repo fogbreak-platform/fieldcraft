@@ -14,9 +14,9 @@ use solidcraft_ui_kit as kit;
 use solidcraft_ui_kit::BackingTooltipExt as _;
 
 /// What is sent, event by event.
-pub const PRIVACY_URL: &str = "https://github.com/tangency-labs/fieldcraft/blob/main/docs/privacy.md";
+pub const PRIVACY_URL: &str = "https://github.com/fogbreak-platform/fieldcraft/blob/main/docs/privacy.md";
 /// The question, as the first run asks it.
-pub const QUESTION: &str = "Help improve FieldCraft by sharing anonymous usage: which tools you use, nothing from your models.";
+pub const QUESTION: &str = "Help improve Fogbreak Field by sharing anonymous usage: which tools you use, nothing from your models.";
 const DETAIL: &str = "Counted: the commands you run (their names, how long they took, whether they failed), the steps from a design to results, \
                       the samples you open, and the version, OS and a random id for this install. Never sent: file names or paths, geometry, model \
                       contents, parameter values or messages.";
@@ -150,7 +150,7 @@ pub fn show(app: &mut ModelApp, ctx: &egui::Context) {
         return;
     }
     let (mut link, mut updates) = (false, None);
-    let (closed, action) = crate::frame::window(egui::Id::unique("fc_consent"), "ui.help", "Help Improve FieldCraft", crate::frame::Width::Normal)
+    let (closed, action) = crate::frame::window(egui::Id::unique("fc_consent"), "ui.help", "Help Improve Fogbreak Field", crate::frame::Width::Normal)
         .actions("Share Anonymous Usage", "Don't Share", None)
         .show(ctx, true, |ui| {
             message(ui, QUESTION);
@@ -179,10 +179,10 @@ fn update_check(ui: &mut egui::Ui, on: bool) -> Option<bool> {
     let mut checked = on;
     let changed = kit::checkbox(ui, "Check for updates automatically", &mut checked)
         .backing_on_hover_text(
-            "At start-up, at most once a day, FieldCraft asks GitHub Releases for the latest version. Nothing installs until you choose Install.",
+            "At start-up, at most once a day, Fogbreak Field asks GitHub Releases for the latest version. Nothing installs until you choose Install.",
         )
         .changed();
-    note(ui, "The check sends only the request (your IP address and the FieldCraft version reach GitHub); off means no check.");
+    note(ui, "The check sends only the request (your IP address and the Fogbreak Field version reach GitHub); off means no check.");
     changed.then_some(checked)
 }
 
