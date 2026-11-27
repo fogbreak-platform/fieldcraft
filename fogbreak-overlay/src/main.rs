@@ -23,6 +23,7 @@ mod web_app {
     use std::rc::Rc;
     use std::sync::mpsc::{Receiver, Sender};
 
+    use base64::Engine as _;
     use eframe::egui;
     use fieldcraft_engine::Session;
     use fieldcraft_ui_egui::files::{Kind, PrefsStore, Services};

@@ -106,9 +106,12 @@ pub fn reject_err(reject: &Function, message: &str) {
 fn enqueue_promise(queue: &ActionQueue, ctx: &egui::Context, kind: ActionKind) -> Promise {
     let queue = Rc::clone(queue);
     let ctx = ctx.clone();
+    let mut kind = Some(kind);
     Promise::new(&mut |resolve, reject| {
-        queue.borrow_mut().push_back(QueuedAction { resolve, reject, kind });
-        ctx.request_repaint();
+        if let Some(kind) = kind.take() {
+            queue.borrow_mut().push_back(QueuedAction { resolve, reject, kind });
+            ctx.request_repaint();
+        }
     })
 }
 
