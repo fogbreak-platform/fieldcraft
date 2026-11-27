@@ -244,6 +244,7 @@ pub fn toolbar(app: &mut ModelApp, ui: &mut egui::Ui) {
                             pressed: of(c).is_some_and(|s| s.running),
                             exit: false,
                             split: None,
+                            planned: false,
                             app_paints: false,
                             covers: &[],
                         })

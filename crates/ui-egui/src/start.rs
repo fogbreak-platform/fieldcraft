@@ -190,7 +190,7 @@ fn contents<'a>(app: &'a ModelApp, ctx: &egui::Context, interactive: bool) -> Pa
         id: "start",
         name: "Start".into(),
         interactive,
-        back: Back { template: "Back to {name}".into(), document: app.model_name().into(), shortcut: "Esc".into(), chosen: Action::Back },
+        back: Some(Back { template: "Back to {name}".into(), document: app.model_name().into(), shortcut: "Esc".into(), escape: true, chosen: Action::Back }),
         rail,
         title: title.into(),
         hint: hint.into(),

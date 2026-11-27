@@ -576,7 +576,9 @@ fn install_fogbreak_glyphs() {
     fn caption(ui: &egui::Ui, cap: Caption, maximized: bool, at: egui::Pos2, s: egui::Stroke) {
         let p = ui.painter();
         match cap {
-            Caption::Minimize => p.line_segment([egui::pos2(at.x - 5.0, at.y), egui::pos2(at.x + 5.0, at.y)], s),
+            Caption::Minimize => {
+                p.line_segment([egui::pos2(at.x - 5.0, at.y), egui::pos2(at.x + 5.0, at.y)], s);
+            }
             Caption::Maximize => {
                 let r = egui::Rect::from_center_size(at, egui::vec2(if maximized { 8.0 } else { 10.0 }, if maximized { 8.0 } else { 10.0 }));
                 p.rect_stroke(r, 0.0, s, egui::StrokeKind::Inside);

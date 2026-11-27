@@ -202,7 +202,7 @@ fn tip(item: &Item, reachable: bool) -> String {
 }
 
 /// Where the History strip publishes its marker and steps.
-const HANDLES: history_bar::Handles<'static> = history_bar::Handles { marker: "timeline:marker", step: "timeline:step:" };
+const HANDLES: history_bar::Handles<'static> = history_bar::Handles { grip: GRIP, marker: "timeline:marker", step: "timeline:step:", controls: CONTROLS };
 /// Where the header publishes its grip.
 const GRIP: &str = "timeline:grip";
 /// Where the header publishes each History control (this followed by the control's id).
@@ -295,7 +295,7 @@ impl Steps<'_> {
     fn step(&self, strip: &mut history_bar::Strip<'_, '_>, item: &Item) {
         let reachable = item.end >= self.oldest;
         let label = describe(item);
-        let tip = || tip(item, reachable);
+        let tip = || kit::StatusTip { head: tip(item, reachable), ..Default::default() };
         let step = history_bar::Step {
             id: item.start as u64,
             slot: item.start,
@@ -505,7 +505,11 @@ fn contents(app: &mut ModelApp, ui: &mut egui::Ui, t: &Tokens, floating: bool) -
     let oldest = done.saturating_sub(undo);
     let accent = solidcraft_theme::TabAccent::current(ui.ctx());
     let bar = history_bar::Bar {
+        title: "History",
         marker_tip: "The model is here: drag to roll it back or forward",
+        play: false,
+        playing: false,
+        play_labels: kit::PlayLabels { play: "", stop: "" },
         accent,
         drag_accent: accent,
         // Slots are journal positions: the marker stands after the commands done.
@@ -550,7 +554,13 @@ fn contents(app: &mut ModelApp, ui: &mut egui::Ui, t: &Tokens, floating: bool) -
     }
     for action in actions {
         roll = match action {
-            history_bar::Action::Seek { slot, .. } => Some(Roll::To(slot)),
+            history_bar::Action::Seek(seek) => match seek {
+                history_bar::Seek::First => Some(Roll::Undo(usize::MAX)),
+                history_bar::Seek::Back => Some(Roll::Undo(1)),
+                history_bar::Seek::Forward => Some(Roll::Redo(1)),
+                history_bar::Seek::Last => Some(Roll::Redo(usize::MAX)),
+                history_bar::Seek::Slot { slot, .. } => Some(Roll::To(slot)),
+            },
             // A command's chip rolls the model to just after it (or says why it cannot).
             history_bar::Action::Select { step, .. } => usize::try_from(step).ok().map(|at| Roll::To(at + 1)),
             _ => roll,

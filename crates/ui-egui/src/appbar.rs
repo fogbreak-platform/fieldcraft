@@ -32,7 +32,6 @@ const HANDLES: app_bar::Handles<'static> = app_bar::Handles {
     home_rect: &["app_bar:home"],
     file: &["app_bar:file"],
     file_rect: &["app_bar:file"],
-    plugins: "app_bar:plugins",
     button: &["app_bar:"],
     separator: "app_bar:separator:",
     search: "ribbon:search",
@@ -124,13 +123,14 @@ fn bar(app: &mut ModelApp, ui: &mut egui::Ui, r: Rect, content: Rect) {
     let button = |id, icon, tip, enabled, wide_only| BarButton { id, icon, tip, enabled, narrow: true, wide_only };
     let chrome = |id, icon, tip| BarButton { id, icon, tip, enabled: true, narrow: false, wide_only: false };
     let data = app_bar::AppBar {
+        items: None,
+        quick_ids: &[],
         mark: &mark,
         name: "Fogbreak Field",
+        leading: None,
         home: chrome("home", "home", "Start: new, open, recent files and samples"),
         file: "File",
         file_open: app.ui.menu.as_deref() == Some("file"),
-        // FieldCraft runs no plugins.
-        plugins: None,
         actions: vec![
             button("save", "save", &save_tip, !busy, false),
             button("undo", "undo", &undo_tip, undo > 0 && !busy, true),
@@ -201,8 +201,7 @@ fn bar(app: &mut ModelApp, ui: &mut egui::Ui, r: Rect, content: Rect) {
                 }
             }
             BarAction::HidePill { id } => app.hide_link(id),
-            // The bar shows no Plugins button (`plugins: None`).
-            BarAction::Plugins { .. } => {}
+            BarAction::App { .. } => {}
         }
     }
     let cy = r.center().y;
@@ -343,9 +342,9 @@ fn document_tab(app: &mut ModelApp, ui: &mut egui::Ui, r: Rect, x0: f32, x1: f32
         }
     }
     let close_key = shortcut("W");
-    let menu = [app_bar::TabMenuRow { id: "close", label: "Close", key_on_selected: &close_key, needs_others: false }];
+    let menu = [app_bar::TabMenuRow::new("close", "Close", &close_key)];
     let mut strip = app_bar::TabStrip {
-        tabs: vec![app_bar::DocTab { name: &name, list_name: &name, dirty, place: &place, security: None }],
+        tabs: vec![app_bar::DocTab { name: &name, list_name: &name, dirty, place: &place, security: None, views: Vec::new() }],
         selected: 0,
         shown_selected: (!app.start_shown()).then_some(0),
         title_bar: true,
@@ -358,6 +357,24 @@ fn document_tab(app: &mut ModelApp, ui: &mut egui::Ui, r: Rect, x0: f32, x1: f32
         new_tip: "New model (File › New)",
         id: egui::Id::unique("fc_document_tabs"),
         handles: TAB_HANDLES,
+        views_as_tabs: false,
+        switcher_always: false,
+        clear_view_tabs: false,
+        pop_out: false,
+        view_text: app_bar::ViewText::default(),
+        view_menu: &[],
+        view_right_row: "",
+        view_rename_row: "",
+        view_rename: None,
+        plus_menu: &[],
+        layout_menu: &[],
+        view_layout: None,
+        layout_current: "",
+        layout_tip: "",
+        layout_fill: "",
+        layout_fill_heading: "",
+        switcher_menu: &[],
+        tear_off_below: f32::INFINITY,
     };
     // The strip's hit regions stay clear of what is right of it.
     let room = Rect::from_min_max(pos2(x0, r.top()), pos2(x1, r.bottom()));
@@ -391,6 +408,11 @@ const TAB_HANDLES: app_bar::TabHandles<'static> = app_bar::TabHandles {
     rename: "document_tab_rename",
     menu_row: "document_tab_menu:",
     more_row: "document_tabs_more:",
+    view: "document_tab_view:",
+    view_close: "document_tab_view_close:",
+    view_new: "document_tab_view_new",
+    view_more: "document_tab_view_more",
+    switcher: "document_tab_switcher",
 };
 
 /// The shortcut text with this platform's command key.
