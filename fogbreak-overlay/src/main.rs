@@ -581,7 +581,10 @@ mod web_app {
                 return;
             };
             let result = match document
-                .get_element_by_id(CANVAS_ID)
+                .query_selector("canvas[data-host=\"page\"][data-engine=\"fogbreak-field\"]")
+                .ok()
+                .flatten()
+                .or_else(|| document.get_element_by_id(CANVAS_ID))
                 .and_then(|e| e.dyn_into::<web_sys::HtmlCanvasElement>().ok())
             {
                 Some(canvas) => run(canvas).await,
