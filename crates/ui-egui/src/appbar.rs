@@ -144,7 +144,7 @@ fn bar(app: &mut ModelApp, ui: &mut egui::Ui, r: Rect, content: Rect) {
             tip: "Report a bug: draft a GitHub issue with the version, the OS and the last error; nothing is sent until you submit it",
             icon_only: false,
         },
-        pills: crate::links::pills(&app.prefs, r.width() >= app_bar::PILL_LABEL_MIN),
+        pills: crate::links::pills(&app.prefs, r.width() >= 960.0),
         search: false,
         search_shortcut: None,
         assistant: false,

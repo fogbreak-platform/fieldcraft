@@ -629,7 +629,7 @@ fn install_fogbreak_glyphs() {
             p,
             c,
             name,
-            egui::vec3(dir[0] as f32, dir[1] as f32, dir[2] as f32),
+            dir,
             at,
             depth,
             hovered,
